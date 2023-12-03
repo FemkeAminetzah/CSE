@@ -12,8 +12,8 @@ from run_ple_utils import make_ple_env
 
 def main_event_dependent():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--test_env', help='testv environment ID', default='ContFlappyBird-v3')
-    parser.add_argument('--total_timesteps', help='Total number of env steps', type=int, default=int(2e5))
+    parser.add_argument('--test_env', help='testv environment ID', default='ContFlappyBird-gfNS-nrf3-train-v0')
+    parser.add_argument('--total_timesteps', help='Total number of env steps', type=int, default=1000)
     parser.add_argument('--seed', help='RNG seed', type=int, default=1)
     parser.add_argument('--logdir', default='C:/Users/mackj/OneDrive/Desktop/ED_CONTROL',
                         help='directory where logs are stored')

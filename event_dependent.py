@@ -1,60 +1,24 @@
+import argparse
+import logging
+import os, sys
+import csv
 import numpy as np
 import random
-import sys
+import time
 import imageio
 import pygame
-
-sys.path.append("path/to/FlappyBird_agents_upgraded")
-sys.path.append("path/to/FlappyBird_environment_upgraded")
+sys.path.append("FlappyBird_agents_upgraded")
+sys.path.append("FlappyBird_environment_upgraded")
 from run_ple_utils import make_ple_env
 
-class iPIDController:
-    def __init__(self, alpha, h):
-        self.Kp = 1.0
-        self.Kd = 1.0
-        self.alpha = alpha
-        self.h = h
-        self.prev_error = 0
-        self.prev_estimation = 0
-        self.cumulative_error = 0
-        self.error_threshold = 0.5
 
-    def algebraic_estimation(self, y):
-        estimation = (y - self.prev_estimation) / self.h
-        self.prev_estimation = y
-        return estimation
-
-    def adjust_gains(self):
-        if abs(self.cumulative_error) > self.error_threshold:
-            self.Kp += 0.1
-            self.Kd += 0.1
-        elif abs(self.cumulative_error) < -self.error_threshold:
-            self.Kp -= 0.1
-            self.Kd -= 0.1
-
-    def control_action(self, y, y_setpoint):
-        error = y_setpoint - y
-        self.cumulative_error += error
-        d_error = (error - self.prev_error) / self.h
-        d_y = self.algebraic_estimation(y)
-        u = self.Kp * error + self.Kd * (d_error - self.alpha * d_y)
-        self.prev_error = error
-        self.adjust_gains()
-        return u
-
-    def decide_action(self, state):
-        y = state[0]
-        y_setpoint = 0.9 * (state[2] + state[3])
-        u = self.control_action(y, y_setpoint)
-        return 0 if u > 0 else 1
-
-def main_iPID():
+def main_event_dependent():
     # Parameters
     env_id = 'ContFlappyBird-v3'
     total_timesteps = 3000
     seed = 0
-    video_path = 'C:/Users/mackj/OneDrive/Desktop/SimVids/simulation_iPID.mp4'
-    image_path = 'C:/Users/mackj/OneDrive/Desktop/SimPaths/simulation_iPID_path.png'
+    video_path = 'C:/Users/mackj/OneDrive/Desktop/SimVids/simulation_event_dependent.mp4'
+    image_path = 'C:/Users/mackj/OneDrive/Desktop/SimPaths/simulation_event_dependent_path.png'
     
     frame_interval = 71  # Capture every 71st frame
 
@@ -64,7 +28,6 @@ def main_iPID():
 
     test_env = make_ple_env(env_id, seed=seed)
     state = test_env.reset()
-    controller = iPIDController(alpha=0.5, h=0.1)
 
     frames = []  # Store frames for video
     bird_positions = []  # Store the bird's positions to draw the path
@@ -73,25 +36,28 @@ def main_iPID():
 
 
     for t in range(total_timesteps):
-        action = controller.decide_action(state)
+        
+        if state[0] > 0.5 * (state[2] + state[3]):
+            action = 0  # FLAP
+        else:
+            action = 1
 
         bird_y = state[0]
         gap_top = state[3]
         gap_bottom = state[2]
 
-        # Check if the bird is in the gap
         is_safe = gap_bottom < bird_y < gap_top
         bird_safe.append(is_safe)
 
         if is_safe:
             time_in_gap += 1
-        
-        if action == 0:
-            total_flaps += 1  # Increment total flaps if the bird flaps this timestep
-            flap_positions.append(t)
 
-        state, reward, done, _ = test_env.step(action)
+        if action == 0:
+            total_flaps += 1
+            flap_positions.append(t)
         
+        state, reward, done, _ = test_env.step(action)
+
         if t % frame_interval == 0:
             frame = test_env.render(mode='rgb_array')
             frame = np.flip(frame, axis=1)  # Flip horizontally
@@ -128,7 +94,7 @@ def main_iPID():
             bird_positions[i], 
             5  # Width of the path
         )
-
+    
     for flap_time in flap_positions:
         x_flap_position = flap_time * frame.shape[1] // frame_interval + 70
         pygame.draw.line(
@@ -139,15 +105,17 @@ def main_iPID():
             2  # Width of the flap line
         )
 
+
     pygame.image.save(combined_surface, image_path)
     #writer = imageio.get_writer(video_path, fps=60)
     #for frame in frames:
     #    writer.append_data(frame)
     #writer.close()
     lam = 0
-    PES = lam * time_in_gap / total_timesteps - (1-lam) * ( total_flaps / total_timesteps )
+    PES = time_in_gap / total_timesteps - lam * ( total_flaps / total_timesteps )
     print(f'Performance Efficiency Score: {PES}')
 
 
+
 if __name__ == '__main__':
-    main_iPID()
+    main_event_dependent()

@@ -14,7 +14,7 @@ def main():
 
     # ---- Specifiy the version of CFB ----
     game = 'ContFlappyBird'
-    ns = 'rand_feat'                             # '', 'gfNS', 'gsNS', 'rand_feat'
+    ns = ''                             # '', 'gfNS', 'gsNS', 'rand_feat'
     nrandfeat = ('-nrf' + str(2))       # '', 0,2,3,4
     noiselevel = ('-nl' + str(0.001))   # '', 0.0001 - 0.05 (see env/__init__.py)
     experiment_phase = '-train'         # '-test', '-train'

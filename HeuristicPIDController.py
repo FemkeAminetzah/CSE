@@ -1,75 +1,92 @@
-import argparse
-import os, sys
+import sys
 import numpy as np
-import random
-import time
-sys.path.append("FlappyBird_agents_upgraded")
-sys.path.append("FlappyBird_environment_upgraded")
+import pygame
 from run_ple_utils import make_ple_env
 
 class HeuristicPIDController:
     def __init__(self):
-        # Control gains
-        self.Kp = 1.0
-        self.Ki = 0.5
-        self.Kd = 1.0
-        # Previous error and integral of error
+        # Adjust control gains
+        self.Kp = 0.8  # Proportional gain
+        self.Ki = 0.4  # Integral gain
+        self.Kd = 0.9  # Derivative gain
         self.prev_error = 0
         self.integral_error = 0
 
-        self.flaps = 0
-        self.pipe_collisions = 0
-
     def control_action(self, y, y_setpoint):
-        """Compute the control action based on the error, its integral, and its derivative."""
         error = y_setpoint - y
         self.integral_error += error
-        d_error = error - self.prev_error
-        # Control law
-        u = self.Kp * error + self.Ki * self.integral_error + self.Kd * d_error
+        derivative_error = error - self.prev_error
+        u = self.Kp * error + self.Ki * self.integral_error + self.Kd * derivative_error
         self.prev_error = error
         return u
 
     def decide_action(self, state):
-        """Decide whether to flap based on the control action."""
         y = state[0]  # Bird's vertical position
-        y_setpoint = 0.5 * (state[2] + state[3])  # Midpoint between pipes
+        y_setpoint = 0.6 * (state[2] + state[3])  # Adjust setpoint for better alignment
         u = self.control_action(y, y_setpoint)
-        if u > 0:
-            self.flaps += 1
-        return 1 if u > 0 else 0  # Flap if control action is positive
+        return 1 if u > 0 else 0
 
 def main_HeuristicPID():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--test_env', help='test environment ID', default='ContFlappyBird-v3')
-    parser.add_argument('--total_timesteps', help='Total number of env steps', type=int, default=int(2e5))
-    parser.add_argument('--seed', help='RNG seed', type=int, default=1)
-    parser.add_argument('--logdir', default='C:/Users/mackj/OneDrive/Desktop/ED_CONTROL',
-                        help='directory where logs are stored')
-    parser.add_argument('--show_interval', type=int, default=1,
-                        help='Env is rendered every n-th episode. 0 = no rendering')
-    args = parser.parse_args()
+    env_id = 'ContFlappyBird-v3'
+    total_timesteps = 3000
+    seed = 0
+    video_path = 'C:/Users/mackj/OneDrive/Desktop/SimVids/simulation_hPID.mp4'
+    image_path = 'C:/Users/mackj/OneDrive/Desktop/SimPaths/simulation_hPID_path.png'
+    
+    frame_interval = 71
+    test_env = make_ple_env(env_id, seed=seed)
+    state = test_env.reset()
+    controller = HeuristicPIDController()
 
-    np.random.seed(args.seed)
-    random.seed(args.seed)
+    frames = []
+    bird_positions = []
+    bird_safe = []
 
-    for s in range(100, 120):
-        test_env = make_ple_env(args.test_env, seed=s)
-        state = test_env.reset()
-        total_return = 0
+    time_in_gap = 0
+    total_flaps = 0
 
-        t = 0
-        controller = HeuristicPIDController()
-        while t < args.total_timesteps:
-            t += 1
-            if args.show_interval > 0:
-                test_env.render()
-                time.sleep(0.01)
-            action = controller.decide_action(state)
-            state, reward, dones, _ = test_env.step(action)
-            total_return += reward
+    for t in range(total_timesteps):
+        action = controller.decide_action(state)
 
-        test_env.close()
+        bird_y = state[0]
+        gap_top = state[3]
+        gap_bottom = state[2]
+        is_safe = gap_bottom < bird_y < gap_top
+        bird_safe.append(is_safe)
+
+        if is_safe:
+            time_in_gap += 1
+        
+        if action == 1:
+            total_flaps += 1
+
+        state, reward, done, _ = test_env.step(action)
+        if t % frame_interval == 0:
+            frame = test_env.render(mode='rgb_array')
+            frames.append(np.flip(frame, axis=1))
+        x_position = t * frame.shape[1] // frame_interval + 70
+        bird_positions.append((x_position, int(bird_y)))
+
+        if done:
+            state = test_env.reset()
+
+    test_env.close()
+
+    combined_surface = pygame.Surface((len(frames) * frames[0].shape[1], frames[0].shape[0]))
+    for i, frame in enumerate(frames):
+        frame_surface = pygame.surfarray.make_surface(frame).convert()
+        frame_surface = pygame.transform.rotate(frame_surface, -90)
+        combined_surface.blit(frame_surface, (i * frame_surface.get_width(), 0))
+
+    for i in range(1, len(bird_positions)):
+        color = (0, 255, 0) if bird_safe[i] else (255, 0, 0)
+        pygame.draw.line(combined_surface, color, bird_positions[i - 1], bird_positions[i], 5)
+
+    pygame.image.save(combined_surface, image_path)
+
+    lam = 1
+    PES = lam * time_in_gap / total_timesteps - (1-lam) * (total_flaps / total_timesteps)
+    print(f'Performance Efficiency Score: {PES}')
 
 if __name__ == '__main__':
     main_HeuristicPID()

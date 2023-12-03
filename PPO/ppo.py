@@ -4,7 +4,9 @@ import logging, csv
 import numpy as np
 import tensorflow as tf
 from collections import deque
-
+import sys
+sys.path.append("path/to/FlappyBird_agents_upgraded")
+sys.path.append("path/to/FlappyBird_environment_upgraded")
 from utils import find_trainable_variables, make_session, set_global_seeds
 from utils import cat_entropy, mse, explained_variance, normalize_obs, discount_with_dones
 from utils import add_to_collection_rnn_state

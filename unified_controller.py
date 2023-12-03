@@ -8,6 +8,8 @@ sys.path.append("FlappyBird_environment_upgraded")
 from run_ple_utils import make_ple_env
 from gym import envs
 
+
+
 class iPIDController:
     def __init__(self, alpha, h):
         # Control gains
@@ -95,7 +97,9 @@ class HeuristicPIDController:
         if u > 0:
             self.flaps += 1
         return 1 if u > 0 else 0  # Flap if control action is positive
-
+#'ContFlappyBird-hNS-nrf3-train-v0'
+#'ContFlappyBird-gfNS-nrf3-train-v0'
+#'ContFlappyBird-gsNS-nrf3-train-v0'
 def main_unified():
     parser = argparse.ArgumentParser()
     parser.add_argument('--test_env', help='test environment ID', default='ContFlappyBird-hNS-nrf3-train-v0')
