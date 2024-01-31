@@ -11,7 +11,6 @@ sys.path.append("FlappyBird_environment_upgraded")
 import gym
 import envs
 
-print(sys.path)
 
 import envs.nenvironment
 from envs.vec_env import SubprocVecEnv
