@@ -3,8 +3,8 @@ import os, sys
 import numpy as np
 import random
 import time
-sys.path.append("FlappyBird_agents_upgraded")
-sys.path.append("FlappyBird_environment_upgraded")
+sys.path.append("ContinuousSubmarine_agents")
+sys.path.append("ContinuousSubmarineEnvironment")
 from run_ple_utils import make_ple_env
 from gym import envs
 
@@ -129,7 +129,7 @@ def main_unified():
     while t < args.total_timesteps:
         t += 1
 
-        # Render environments if needed
+        # Render environments 
         if args.show_interval > 0:
             env_heuristic.render()
             env_iPID.render()

@@ -8,19 +8,12 @@ from stable_baselines3 import DQN
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback
-sys.path.append("path/to/FlappyBird_agents_upgraded")
-sys.path.append("path/to/FlappyBird_environment_upgraded")
+sys.path.append("path/to/ContinuousSubmarine_agents")
+sys.path.append("path/to/ContinuousSubmarineEnvironment")
 from run_ple_utils import make_ple_env
 import numpy as np
 import pygame
 from dqn_wrapper import PESWrapper
-
-# Initialize Weights & Biases
-wandb.init(project="flappybird_dqn", entity="jupiter-thesis")
-
-# Path to save models and logs
-#log_dir = f"C:/Users/mackj/OneDrive/Desktop/DQN/logs/DQN-{int(time.time())}"
-#models_dir = f"C:/Users/mackj/OneDrive/Desktop/DQN/models/DQN-{int(time.time())}"
 
 log_dir = f"C:/Users/mackj/OneDrive/Desktop/DQN/logs/DQN-{int(time.time())}"
 models_dir = f"C:/Users/mackj/OneDrive/Desktop/DQN/models/DQN-{int(time.time())}"
@@ -59,5 +52,3 @@ for i in range(1,100):
 mean_reward, std_reward = evaluate_policy(model, model.get_env(), n_eval_episodes=10)
 print(f"Mean reward: {mean_reward}, Std Reward: {std_reward}")
 
-wandb.log({'mean_reward': mean_reward, 'std_reward': std_reward})
-wandb.finish()

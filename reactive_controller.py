@@ -7,8 +7,8 @@ import random
 import time
 import imageio
 import pygame
-sys.path.append("FlappyBird_agents_upgraded")
-sys.path.append("FlappyBird_environment_upgraded")
+sys.path.append("ContinuousSubmarine_agents")
+sys.path.append("ContinuousSubmarineEnvironment")
 from run_ple_utils import make_ple_env
 
 def compute_discrete_action(state, game_instance):

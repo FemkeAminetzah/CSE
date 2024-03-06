@@ -6,8 +6,8 @@ import os
 import json, time, csv
 import numpy as np
 import sys
-sys.path.append("FlappyBird_agents_upgraded")
-sys.path.append("FlappyBird_environment_upgraded")
+sys.path.append("ContinuousSubmarine_agents")
+sys.path.append("ContinuousSubmarineEnvironment")
 import gym
 import envs
 

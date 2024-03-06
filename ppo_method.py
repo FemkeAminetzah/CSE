@@ -8,8 +8,8 @@ from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback
 
-sys.path.append("path/to/FlappyBird_agents_upgraded")
-sys.path.append("path/to/FlappyBird_environment_upgraded")
+sys.path.append("path/to/ContinuousSubmarine_agents")
+sys.path.append("path/to/ContinuousSubmarineEnvironment")
 from run_ple_utils import make_ple_env
 import numpy as np
 import pygame

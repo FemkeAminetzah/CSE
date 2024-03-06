@@ -3,8 +3,8 @@ import sys
 import pygame
 import numpy as np
 
-sys.path.append("FlappyBird_agents_upgraded")
-sys.path.append("FlappyBird_environment_upgraded")
+sys.path.append("ContinuousSubmarine_agents")
+sys.path.append("ContinuousSubmarineEnvironment")
 from ple.games.contsubmarinegame import ContSubmarineGame
 from run_ple_utils import make_ple_env
 import gym
