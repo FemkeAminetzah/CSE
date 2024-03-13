@@ -2,12 +2,44 @@
 This module gives examples on how to learn an optimal policy using the implemented RL methods in ContinuousFlappyBird (CFB).
 """
 import sys
-sys.path.append("FlappyBird_agents_upgraded")
-sys.path.append("FlappyBird_environment_upgraded")
-from models import MLPPolicy, LSTMPolicy, GRUPolicy
-from run_ple_utils import make_ple_envs, make_ple_env
+import os
+cwd = os.getcwd()
 
-LOGDIR = 'C:/Users/mackj/OneDrive/Desktop'  # TODO set the directory
+# Add the base directory to the Python path
+#sys.path.append(cwd)
+
+
+# Now add the subdirectories
+#sys.path.append("ContinuousSubmarine_agents")
+
+
+# Import the necessary modules
+from ContinuousSubmarineEnvironment.envs import nenvironment
+from ContinuousSubmarineEnvironment.envs import random_trajectories
+from ContinuousSubmarine_agents.models import MLPPolicy, LSTMPolicy, GRUPolicy
+from ContinuousSubmarine_agents.run_ple_utils import make_ple_envs, make_ple_env
+
+from pathlib import Path 
+
+
+
+sys.path.append(str(Path("ContinuousSubmarineEnvironment").resolve()))
+print(sys.path)
+breakpoint()
+
+# Add the root directory to sys.path
+#current_dir = os.path.dirname(os.path.abspath(__file__))
+#root_dir = os.path.join(current_dir, '..', '..')
+#sys.path.append(root_dir)
+
+# Now you can import the environment and random_trajectories modules
+#from ContinuousSubmarineEnvrionment.envs.nenvironment import *
+#from ContinuousSubmarineEnvrionment.envs.random_trajectories import *
+
+LOGDIR = 'C:/Users/femkeaminetzah/Desktop'  # TODO set the directory
+
+#sys.path.insert(1, "/".join(os.path.realpath(__file__).split("/")[0:-2]) + "/envs")
+
 
 def main():
     seed = 42

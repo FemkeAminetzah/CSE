@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-from utils import CategoricalPd, fc
+from ContinuousSubmarine_agents.utils import CategoricalPd, fc
 tf.compat.v1.disable_eager_execution()
 
 def fc_layers(game_state):  # TODO decide on architecture

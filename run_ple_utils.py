@@ -3,17 +3,16 @@ Helpers for scripts like run_ple.py.
 """
 
 import os
-import json, time, csv
+import json
+import time
+import csv
 import numpy as np
 import sys
 sys.path.append("ContinuousSubmarine_agents")
 sys.path.append("ContinuousSubmarineEnvironment")
 import gym
 import envs
-
-
-import envs.nenvironment
-from envs.vec_env import SubprocVecEnv
+from ContinuousSubmarineEnvironment.envs.vec_env import SubprocVecEnv
 from utils import set_global_seeds
 
 
